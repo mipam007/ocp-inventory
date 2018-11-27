@@ -1,0 +1,84 @@
+# OpenShift 3.11 Inventory file
+
+# OSEv3 groups
+[OSEv3:children]
+masters
+etcd
+nodes
+
+# OSEv3 global variables
+[OSEv3:vars]
+
+# Debug level
+debug_level=2
+
+# SSH user
+ansible_ssh_user=ferda
+ansible_become=true
+ansible_ssh_private_key_file=/home/ferda/.ssh/cfme.pem
+
+# Deployment variables
+openshift_deployment_type=openshift-enterprise
+openshift_release='3.11'
+oreg_url=registry.access.redhat.com/openshift3/ose-${component}:${version}
+openshift_hosted_router_selector='node-role.kubernetes.io/infra=true'
+openshift_hosted_manage_router=true
+openshift_hosted_registry_selector='node-role.kubernetes.io/infra=true'
+openshift_hosted_manage_registry=true
+openshift_enable_service_catalog=true
+template_service_broker_install=true
+openshift_examples_modify_imagestreams=true
+openshift_install_examples=true
+osm_use_cockpit=true
+osm_default_node_selector'node-role.kubernetes.io/compute=true'
+
+# HTPasswd auth
+openshift_master_identity_providers=[{'name':'local','login':'true','challenge':'true','kind':'HTPasswdPasswordIdentityProvider'}]
+
+# Master configuration
+openshift_master_api_port=8443
+openshift_master_console_port=8443
+openshift_master_named_certificates=[{"certfile":"/home/ferda/OpenShift/master.crt","keyfile":"/home/ferda/OpenShift/master.key","names":["master.example.com"]}]
+openshift_additional_ca="/home/ferda/OpenShift/ca.crt"
+openshift_master_overwrite_named_certificates=true
+openshift_master_cluster_public_hostname=master.example.com
+openshift_master_cluster_hostname=master-int.example.com
+openshift_master_default_subdomain=apps.example.com
+
+# Network configuration
+osm_cluster_network_cidr=10.128.0.0/14
+openshift_portal_net=172.30.0.0/16
+os_sdn_network_plugin_name='redhat/openshift-ovs-networkpolicy'
+
+# Registry configuration
+openshift_hosted_registry_routehost=docker-registry.apps.example.com
+openshift_hosted_registry_routetermination=reencrypt
+openshift_hosted_registry_routecertificates={'certfile':'/home/ferda/OpenShift/docker-registry.crt','keyfile':'/home/ferda/OpenShift/docker-registry.key','cafile':'/home/ferda/OpenShift/ca.crt'}
+
+# Aggregated logging
+openshift_logging_install_logging=true
+openshift_logging_es_memory_limit=8Gi
+openshift_logging_es_cluster_size=3
+openshift_logging_es_number_of_replicas=1
+openshift_logging_kibana_nodeselector={"node-role.kubernetes.io/infra":"true"}
+openshift_logging_curator_nodeselector={"node-role.kubernetes.io/infra":"true"}
+openshift_logging_es_nodeselector={"node-role.kubernetes.io/infra":"true"}
+openshift_logging_kibana_hostname=kibana.apps.example.com
+openshift_logging_kibana_cert="/home/ferda/OpenShift/kibana.crt"
+openshift_logging_kibana_key="/home/ferda/OpenShift/kibana.key"
+openshift_logging_kibana_ca="/home/ferda/OpenShift/ca.crt"
+
+# Host groups
+[masters]
+master_nody
+
+[etcd]
+etcd_nody
+
+[nodes]
+master_nody openshift_node_group_name='node-config-master'
+...
+infra_nody openshift_node_group_name='node-config-infra'
+...
+compute_nody openshift_node_group_name='node-config-compute'
+...
